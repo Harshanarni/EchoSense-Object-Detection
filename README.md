@@ -54,10 +54,10 @@ EchoSense/
 ```
 
 ## Team
+- Harsha Vardhan Narni
 - Pathuri Mahitha Sai
-- Basina Divya Sri
 - Chelluri Sai Krishna
-- Narni Harsha Vardhan
+- Basina Divya Sri
 
 **Guide:** Mr. G. Sridhar, Assistant Professor, Dept. of CSE
 **Institution:** Ramachandra College of Engineering (Autonomous), Eluru
