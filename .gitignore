@@ -1,0 +1,7 @@
+uploads/
+*.pt
+__pycache__/
+*.pyc
+venv/
+.env
+.DS_Store

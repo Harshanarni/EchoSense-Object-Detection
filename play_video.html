@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Playback</title>
+<style>
+body { font-family: Arial, sans-serif; text-align: center; background: #222; color: white; }
+img { max-width: 90%; border: 3px solid #28a745; border-radius: 8px; margin-top: 15px; }
+a { display: inline-block; margin-top: 15px; padding: 10px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>Video Playback with Object Detection</h1>
+<div>
+<img src="{{ url_for('video_feed', filename=filename) }}" />
+</div>
+<a href="/">Back to Home</a>
+</body>
+</html>

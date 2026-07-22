@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>External Webcam Feed</title>
+<style>
+body { font-family: Arial, sans-serif; text-align: center; background: #222; color: white; }
+img { max-width: 90%; border: 3px solid #28a745; border-radius: 8px; margin-top: 15px; }
+a, button { display: inline-block; margin: 10px; padding: 10px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; border: none; cursor: pointer; }
+.button-container { margin-top: 15px; }
+</style>
+</head>
+<body>
+<h1>External Webcam Object Detection</h1>
+<div>
+<img src="{{ url_for('external_webcam_feed') }}" />
+</div>
+<a href="/">Back to Home</a>
+<div class="button-container">
+<button onclick="triggerAudio()">Audio Feedback</button>
+<button onclick="toggleContinuousAudio()" id="continuousAudioButton">Start Continuous Audio Feedback</button>
+</div>
+
+<script>
+let isContinuousAudioActive = false;
+
+function triggerAudio() {
+  fetch('/trigger_audio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(response => {
+    if (response.ok) { console.log('Audio triggered'); }
+    else { console.error('Failed to trigger audio'); }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function toggleContinuousAudio() {
+  isContinuousAudioActive = !isContinuousAudioActive;
+  const button = document.getElementById('continuousAudioButton');
+  button.textContent = isContinuousAudioActive ? "Stop Continuous Audio Feedback" : "Start Continuous Audio Feedback";
+
+  fetch('/toggle_continuous_audio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active: isContinuousAudioActive })
+  })
+  .then(response => {
+    if (response.ok) { console.log('Continuous audio toggled'); }
+    else { console.error('Failed to toggle continuous audio'); }
+  })
+  .catch(error => console.error('Error:', error));
+}
+</script>
+</body>
+</html>

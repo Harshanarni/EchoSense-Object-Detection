@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real-Time Currency Detection</title>
+<style>
+body { font-family: Arial, sans-serif; text-align: center; background: #222; color: white; }
+img { max-width: 90%; border: 3px solid #28a745; border-radius: 8px; margin-top: 15px; }
+a, button { display: inline-block; margin: 10px; padding: 10px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; border: none; cursor: pointer; }
+.button-container { margin-top: 15px; }
+#detectionStatus { display: none; }
+.active-indicator { color: #28a745; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>Real-Time Indian Currency Detection</h1>
+<div id="detectionStatus">
+Detection Active: <span id="statusIndicator"></span>
+</div>
+<div>
+<img id="videoFeed" src="{{ url_for('money_feed') }}" />
+</div>
+<h2 id="result">Detected Currency: </h2>
+<div class="button-container">
+<button id="audioButton" onclick="toggleAudio()">Enable Audio Feedback</button>
+<a id="backButton" href="/">Back to Home</a>
+</div>
+
+<script>
+let audioEnabled = false;
+let lastSpokenCurrency = '';
+let detectionTimeout = null;
+
+function toggleAudio() {
+  audioEnabled = !audioEnabled;
+  const button = document.getElementById('audioButton');
+  const statusDiv = document.getElementById('detectionStatus');
+  const indicator = document.getElementById('statusIndicator');
+
+  button.textContent = audioEnabled ? 'Disable Audio Feedback' : 'Enable Audio Feedback';
+  button.classList.toggle('active');
+
+  statusDiv.style.display = audioEnabled ? 'block' : 'none';
+  indicator.className = audioEnabled ? 'active-indicator' : '';
+
+  fetch('/toggle_detection', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active: audioEnabled }),
+  });
+}
+
+function updateResult(currency) {
+  const resultElement = document.getElementById('result');
+  if (currency) {
+    resultElement.innerText = `Detected Currency: ${currency} Rupees`;
+    resultElement.style.color = audioEnabled ? '#28a745' : '#dc3545';
+
+    if (detectionTimeout) {
+      clearTimeout(detectionTimeout);
+      detectionTimeout = null;
+    }
+
+    if (audioEnabled && currency !== lastSpokenCurrency) {
+      speak(`${currency} Rupees detected`);
+      lastSpokenCurrency = currency;
+    }
+  } else {
+    if (!detectionTimeout) {
+      detectionTimeout = setTimeout(() => {
+        resultElement.innerText = 'No currency detected';
+        resultElement.style.color = '#6c757d';
+        if (audioEnabled && lastSpokenCurrency) {
+          speak("No currency detected");
+          lastSpokenCurrency = '';
+        }
+      }, 2000);
+    }
+  }
+}
+
+function speak(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  window.speechSynthesis.speak(utterance);
+}
+
+async function fetchCurrency() {
+  try {
+    const response = await fetch('/detect_currency');
+    const data = await response.json();
+    updateResult(data.currency);
+  } catch (error) {
+    console.error('Error fetching currency:', error);
+  }
+}
+
+setInterval(fetchCurrency, 500);
+</script>
+</body>
+</html>
